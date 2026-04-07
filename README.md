@@ -1,4 +1,4 @@
-💰 Buku Kas Tahu Kupat 2
+💰 Buku Kas
 <p align="center"> <img src="https://www.php.net/images/logos/php-logo.svg" width="220" alt="PHP Logo"> </p> <p align="center"> <b>Aplikasi kas berbasis web untuk pencatatan pemasukan dan pengeluaran secara efisien</b><br> <i>Sederhana, cepat, dan tidak ribet (kayak hidup yang seharusnya)</i> </p>
 📖 Tentang Proyek
 
