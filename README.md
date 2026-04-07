@@ -1,6 +1,6 @@
 <div align="center">
 
-# 💰 Buku Kas Tahu Kupat 2
+# 💰 Proyek 2 Semester 2 - Buku Kas
 
 <img src="https://www.php.net/images/logos/php-logo.svg" width="180" alt="PHP Logo">
 
@@ -219,12 +219,12 @@ http://localhost/Proyek2Semester2
 ## 🧑‍💻 Author
 
 <div align="center">
-
-**NickyIno**
-
-*Developer yang ngerti konsep, tapi kadang masih ngetik command setengah.*
-*Progress is progress.* 🚀
-
+<a href="https://github.com/NickyIno">
+  <img src="https://github.com/NickyIno.png" width="100" style="border-radius: 50%;" alt="NickyIno"/>
+</a>
+NickyIno
+Developer yang ngerti konsep, tapi kadang masih ngetik command setengah.
+Progress is progress. 🚀
 </div>
 
 ---
