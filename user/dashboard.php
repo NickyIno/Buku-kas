@@ -132,7 +132,7 @@ $listKas = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
                             <?php if (empty($listKas)): ?>
                             <tr>
-                                <td colspan="7" align="center" style="padding: var(--space-xl);">
+                                <td colspan="8" align="center" style="padding: var(--space-xl);">
                                     <div style="color: var(--gray-500);"><i class="fas fa-folder-open" style="font-size: 32px; margin-bottom: 8px;"></i><br>Belum ada data buku kas.</div>
                                 </td>
                             </tr>
