@@ -1,3 +1,6 @@
+-- Membuat Database
+CREATE DATABASE `Kas`; 
+
 -- Struktur tabel: users
 CREATE TABLE `users` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -32,3 +35,8 @@ CREATE TABLE `master_kas` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Membuat akun utama
+INSERT INTO `users` (`username`, `password`, `role`) 
+VALUES ('admin', '$2y$10$wx/9wTK6DRkc3GsqfST6R.5A7pli9UfqfheYdrwx9EO5AOFlC1x1C', 'admin');
+-- Passwordnya adalah admin
