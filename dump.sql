@@ -1,5 +1,4 @@
--- Membuat Database
-CREATE DATABASE `Kas`; 
+
 
 -- Struktur tabel: users
 CREATE TABLE `users` (

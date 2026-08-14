@@ -1,6 +1,5 @@
 <?php
 include '../aksi/koneksi.php';
-session_start();
 
 if (!isset($_SESSION['username']) || !isset($_SESSION['user_id'])) {
     header("Location: ../index.php");
@@ -18,7 +17,7 @@ $listKas = mysqli_fetch_all($result, MYSQLI_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Buku Kas</title>
-    
+
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <!-- SweetAlert2 -->
@@ -33,14 +32,14 @@ $listKas = mysqli_fetch_all($result, MYSQLI_ASSOC);
     <!-- Top bar (mobile/desktop) -->
     <header class="top-bar">
         <div class="top-bar-left">
-            <button class="menu-toggle" id="mobile-menu-toggle">
+            <button class="menu-toggle" id="mobile-menu-toggle" aria-label="Buka menu">
                 <i class="fas fa-bars"></i>
             </button>
             <span class="brand-title">Buku Kas</span>
         </div>
         <div class="top-bar-right">
-            <div class="user-avatar">
-                <?php echo strtoupper(substr($_SESSION['username'], 0, 1)); ?>
+            <div class="user-avatar" aria-hidden="true">
+                <?php echo e(strtoupper(substr($_SESSION['username'], 0, 1))); ?>
             </div>
         </div>
     </header>
@@ -50,14 +49,14 @@ $listKas = mysqli_fetch_all($result, MYSQLI_ASSOC);
         <div class="sidebar-header">
             <i class="fas fa-table" style="color: var(--excel-green-light);"></i>
         </div>
-        <div class="sidebar-menu">
+        <nav class="sidebar-menu" aria-label="Menu utama">
             <a href="dashboard.php" class="sidebar-item active">
                 <i class="fas fa-chart-line"></i> Dashboard
             </a>
             <a href="tambahKas.php" class="sidebar-item">
                 <i class="fas fa-plus"></i> Tambah Kas
             </a>
-            <a href="akun.php?id=<?php echo $_SESSION['user_id']; ?>" class="sidebar-item">
+            <a href="akun.php?id=<?php echo (int)$_SESSION['user_id']; ?>" class="sidebar-item">
                 <i class="fas fa-user"></i> Akun
             </a>
             <div style="margin-top: auto; padding: var(--space-md);">
@@ -66,15 +65,15 @@ $listKas = mysqli_fetch_all($result, MYSQLI_ASSOC);
                     <i class="fas fa-sign-out-alt"></i> Logout
                 </a>
             </div>
-        </div>
+        </nav>
     </aside>
 
-    <!-- Main - main  -->
+    <!-- Main  -->
     <div class="main-wrapper">
         <main class="page-content">
-            
+
             <div class="mb-md" style="display:flex; justify-content:space-between; align-items:center;">
-                <h2>Halo, <?php echo $_SESSION['username']; ?>!</h2>
+                <h2>Halo, <?php echo e($_SESSION['username']); ?>!</h2>
                 <a href="tambahKas.php" class="btn btn-primary" style="display: none;">
                     <i class="fas fa-plus"></i> Tambah Kas
                 </a>
@@ -94,9 +93,10 @@ $listKas = mysqli_fetch_all($result, MYSQLI_ASSOC);
                 <div class="card-header">
                     <i class="fas fa-table"></i> Daftar Buku Kas
                 </div>
-                
+
                 <div class="table-wrapper">
                     <table class="excel-table">
+                        <thead>
                             <tr>
                                 <th>#</th>
                                 <th>Nama Kas</th>
@@ -106,27 +106,33 @@ $listKas = mysqli_fetch_all($result, MYSQLI_ASSOC);
                                 <th>Update</th>
                                 <th>Opsi</th>
                                 <th>Terakhir diubah oleh</th>
-                                </tr>
+                            </tr>
+                        </thead>
+                        <tbody>
                             <?php $no = 1;
                             foreach ($listKas as $kas): ?>
                             <tr>
                                 <td><?php echo $no++; ?></td>
-                                <td><strong><?php echo ($kas['nama_kas']); ?></strong></td>
-                                <td style="color:var(--excel-green); font-weight: 500;">Rp <?php echo number_format($kas['total_masuk'], 0, ',', '.'); ?></td>
-                                <td style="color:var(--color-danger); font-weight: 500;">Rp <?php echo number_format($kas['total_keluar'], 0, ',', '.'); ?></td>
-                                <td><span class="badge badge-gray"><?php echo date('d/m/y', strtotime($kas['created_at'])); ?></span></td>
-                                <td><span class="badge badge-gray"><?php echo date('d/m/y H:i', strtotime($kas['updated_at'])); ?></span></td>
+                                <td><strong><?php echo e($kas['nama_kas']); ?></strong></td>
+                                <td style="color:var(--excel-green); font-weight: 500;">Rp <?php echo number_format((float)$kas['total_masuk'], 0, ',', '.'); ?></td>
+                                <td style="color:var(--color-danger); font-weight: 500;">Rp <?php echo number_format((float)$kas['total_keluar'], 0, ',', '.'); ?></td>
+                                <td><span class="badge badge-gray"><?php echo e(date('d/m/y', strtotime($kas['created_at']))); ?></span></td>
+                                <td><span class="badge badge-gray"><?php echo e(date('d/m/y H:i', strtotime($kas['updated_at']))); ?></span></td>
                                 <td>
-                                    <div style="display: flex; gap: 4px;">
-                                        <a href="bukuKas.php?id=<?php echo $kas['id']; ?>" class="btn btn-primary btn-sm">
+                                    <div style="display: flex; gap: 4px; align-items: center;">
+                                        <a href="bukuKas.php?id=<?php echo (int)$kas['id']; ?>" class="btn btn-primary btn-sm">
                                             <i class="fas fa-folder-open"></i> Buka
                                         </a>
-                                        <a href="../aksi/hapusMaster.php?id=<?php echo $kas['id']; ?>" class="btn btn-danger btn-sm" onclick="konfirmasiHapusMaster(event, this.href)">
-                                            <i class="fas fa-trash"></i>
-                                        </a>
+                                        <form method="POST" action="../aksi/hapusMaster.php" style="display: inline;">
+                                            <?php echo csrf_field(); ?>
+                                            <input type="hidden" name="id" value="<?php echo (int)$kas['id']; ?>">
+                                            <button type="submit" name="hapus" value="1" class="btn btn-danger btn-sm" onclick="konfirmasiHapusMaster(event, this)">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
                                     </div>
                                 </td>
-                                <td><?php echo $kas['username']; ?></td>
+                                <td><?php echo e($kas['username']); ?></td>
                             </tr>
                             <?php endforeach; ?>
 
@@ -145,7 +151,7 @@ $listKas = mysqli_fetch_all($result, MYSQLI_ASSOC);
         </main>
     </div>
 
-    <nav class="bottom-nav">
+    <nav class="bottom-nav" aria-label="Navigasi bawah">
         <a href="dashboard.php" class="nav-item active">
             <i class="fas fa-chart-line"></i>
             <span>Dashboard</span>
@@ -154,7 +160,7 @@ $listKas = mysqli_fetch_all($result, MYSQLI_ASSOC);
             <i class="fas fa-plus"></i>
             <span>Tambah</span>
         </a>
-        <a href="akun.php?id=<?php echo $_SESSION['user_id']; ?>" class="nav-item">
+        <a href="akun.php?id=<?php echo (int)$_SESSION['user_id']; ?>" class="nav-item">
             <i class="fas fa-circle-user"></i>
             <span>Akun</span>
         </a>
@@ -163,7 +169,7 @@ $listKas = mysqli_fetch_all($result, MYSQLI_ASSOC);
     <!-- JS -->
     <script src="../style/app.js"></script>
     <script>
-    function konfirmasiHapusMaster(event, url) {
+    function konfirmasiHapusMaster(event, btn) {
         event.preventDefault();
         Swal.fire({
             title: "Hapus Buku?",
@@ -176,27 +182,27 @@ $listKas = mysqli_fetch_all($result, MYSQLI_ASSOC);
             cancelButtonText: "Batal",
             borderRadius: '8px'
         }).then((result) => {
-            if (result.isConfirmed) { window.location.href = url; }
+            if (result.isConfirmed) { btn.closest('form').submit(); }
         });
     }
 
     function konfirmasiLogout(event, url) {
-    event.preventDefault(); 
-    Swal.fire({
-        title: "Apakah Anda yakin?",
-        text: "Anda akan keluar dari akun ini!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Ya, logout!",
-        cancelButtonText: "Batal"
-    }).then((result) => {
-        if (result.isConfirmed) {
-            window.location.href = url;
-        }
-    });
-}
+        event.preventDefault();
+        Swal.fire({
+            title: "Apakah Anda yakin?",
+            text: "Anda akan keluar dari akun ini!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Ya, logout!",
+            cancelButtonText: "Batal"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = url;
+            }
+        });
+    }
     </script>
 </body>
 </html>

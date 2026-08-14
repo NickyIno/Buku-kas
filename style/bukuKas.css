@@ -197,6 +197,27 @@ a.link-hapus:hover {
     background: #fdecea;
 }
 
+button.link-hapus {
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--merah);
+    background: transparent;
+    border: none;
+    padding: 3px 7px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+button.link-hapus:hover {
+    background: #fdecea;
+}
+
+.hapus-form {
+    display: inline;
+}
+
 .excel-table tfoot tr td {
     background: #eef3ee;
     font-weight: 700;

@@ -1,6 +1,5 @@
 <?php
 include '../aksi/koneksi.php';
-session_start();
 if (!isset($_SESSION['username']) || !isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header("Location: ../index.php");
     exit();
@@ -10,7 +9,7 @@ $query  = "SELECT * FROM users ORDER BY id ASC";
 $result = mysqli_query($koneksi, $query);
 $users  = mysqli_fetch_all($result, MYSQLI_ASSOC);
 
-$current_user_id = $_SESSION['user_id'];
+$current_user_id = (int)$_SESSION['user_id'];
 ?>
 
 <!DOCTYPE html>
@@ -56,13 +55,14 @@ $current_user_id = $_SESSION['user_id'];
                             id="searchInput"
                             class="search-input"
                             placeholder="Cari username atau role…"
+                            aria-label="Cari akun"
                         >
                     </div>
-                    
+
                     <span class="toolbar-meta" id="rowCount">
                         <?php echo count($users); ?> akun ditemukan
                     </span>
-                    
+
                 </div>
 
                 <!-- Tabel -->
@@ -79,40 +79,49 @@ $current_user_id = $_SESSION['user_id'];
                         <tbody>
                             <?php if (count($users) > 0): ?>
                                 <?php foreach ($users as $user):
-                                    $isSelf = ($user['id'] == $current_user_id);
+                                    $isSelf = ((int)$user['id'] === $current_user_id);
                                 ?>
                                 <tr class="<?php echo $isSelf ? 'self-row' : ''; ?>">
-                                    <td><?php echo htmlspecialchars($user['id']); ?></td>
+                                    <td><?php echo e($user['id']); ?></td>
                                     <td>
-                                        <?php echo htmlspecialchars($user['username']); ?>
+                                        <?php echo e($user['username']); ?>
                                         <?php if ($isSelf): ?>
                                             <span class="self-tag">Anda</span>
                                         <?php endif; ?>
                                     </td>
                                     <td>
-                                        <span class="badge-role <?php echo htmlspecialchars($user['role']); ?>">
+                                        <span class="badge-role <?php echo e($user['role']); ?>">
                                             <?php if ($user['role'] === 'admin'): ?>
                                                 <i class="fa-solid fa-shield-halved"></i>
                                             <?php else: ?>
                                                 <i class="fa-solid fa-user"></i>
                                             <?php endif; ?>
-                                            <?php echo htmlspecialchars($user['role']); ?>
+                                            <?php echo e($user['role']); ?>
                                         </span>
                                     </td>
                                     <td>
                                         <div class="aksi-group">
-                                            <a href="editAkun.php?id=<?php echo $user['id']; ?>" class="btn-edit">
+                                            <a href="editAkun.php?id=<?php echo (int)$user['id']; ?>" class="btn-edit">
                                                 <i class="fa-solid fa-pen-to-square"></i> Edit
                                             </a>
-                                            <a
-                                                href="hapusAkun.php?id=<?php echo $user['id']; ?>"
-                                                class="btn-hapus <?php echo $isSelf ? 'disabled' : ''; ?>"
-                                                data-id="<?php echo $user['id']; ?>"
-                                                data-name="<?php echo htmlspecialchars($user['username']); ?>"
-                                                data-self="<?php echo $isSelf ? 'true' : 'false'; ?>"
+                                            <form
+                                                method="POST"
+                                                action="../aksi/hapusAkun.php"
+                                                class="aksi-group"
                                             >
-                                                <i class="fa-solid fa-trash-can"></i> Hapus
-                                            </a>
+                                                <?php echo csrf_field(); ?>
+                                                <input type="hidden" name="id" value="<?php echo (int)$user['id']; ?>">
+                                                <button
+                                                    type="submit"
+                                                    name="hapus"
+                                                    value="1"
+                                                    class="btn-hapus <?php echo $isSelf ? 'disabled' : ''; ?>"
+                                                    <?php echo $isSelf ? 'disabled' : ''; ?>
+                                                    data-name="<?php echo e($user['username']); ?>"
+                                                >
+                                                    <i class="fa-solid fa-trash-can"></i> Hapus
+                                                </button>
+                                            </form>
                                         </div>
                                     </td>
                                 </tr>
@@ -132,27 +141,16 @@ $current_user_id = $_SESSION['user_id'];
                 </div>
             </div>
 
-        </div><
+        </div>
     </div>
 
+    <script src="../style/app.js"></script>
     <script>
         document.querySelectorAll('.btn-hapus:not(.disabled)').forEach(function (btn) {
             btn.addEventListener('click', function (e) {
                 e.preventDefault();
 
-                const isSelf = this.dataset.self === 'true';
-                const href   = this.getAttribute('href');
-                const name   = this.dataset.name;
-
-                if (isSelf) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Tidak Diizinkan',
-                        text: 'Anda tidak dapat menghapus akun Anda sendiri.',
-                        confirmButtonColor: '#217346'
-                    });
-                    return;
-                }
+                const name = this.dataset.name;
 
                 Swal.fire({
                     icon: 'question',
@@ -166,9 +164,9 @@ $current_user_id = $_SESSION['user_id'];
                     reverseButtons: true
                 }).then(function (result) {
                     if (result.isConfirmed) {
-                        window.location.href = href;
+                        this.closest('form').submit();
                     }
-                });
+                }.bind(this));
             });
         });
 

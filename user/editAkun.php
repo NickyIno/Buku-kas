@@ -1,6 +1,5 @@
 <?php
 include '../aksi/koneksi.php';
-session_start();
 
 // Proteksi halaman, hanya admin yang boleh akses
 if (!isset($_SESSION['username']) || !isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
@@ -35,6 +34,8 @@ mysqli_stmt_close($stmt);
 $old = ['username' => $akun['username'], 'role' => $akun['role']];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    csrf_check();
+
     $username  = trim($_POST['username'] ?? '');
     $password  = $_POST['password'] ?? '';
     $confirm   = $_POST['confirm_password'] ?? '';
@@ -78,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors['role'] = 'Anda tidak dapat mengubah hak akses (role) akun Anda sendiri.';
     }
 
-    $old = ['username' => htmlspecialchars($username), 'role' => $role];
+    $old = ['username' => $username, 'role' => $role];
 
     // Proses Update ke Database
     if (empty($errors)) {
@@ -151,6 +152,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php endif; ?>
 
                 <form method="POST" action="" id="editAkunForm" novalidate>
+                    <?php echo csrf_field(); ?>
 
                     <!-- Username -->
                     <div class="form-group <?php echo isset($errors['username']) ? 'has-error' : ''; ?>">
@@ -164,7 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 name="username"
                                 class="form-input"
                                 placeholder="Contoh: budi_admin"
-                                value="<?php echo $old['username']; ?>"
+                                value="<?php echo e($old['username']); ?>"
                                 autocomplete="off"
                                 maxlength="50"
                             >

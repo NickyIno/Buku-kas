@@ -1,6 +1,5 @@
 <?php
 include '../aksi/koneksi.php';
-session_start();
 if (!isset($_SESSION['username']) || !isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     header("Location: ../index.php");
     exit();
@@ -11,6 +10,8 @@ $success  = false;
 $old      = ['username' => '', 'role' => 'user'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    csrf_check();
+
     $username  = trim($_POST['username'] ?? '');
     $password  = $_POST['password'] ?? '';
     $confirm   = $_POST['confirm_password'] ?? '';
@@ -111,6 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php endif; ?>
 
                 <form method="POST" action="" id="tambahAkunForm" novalidate>
+                    <?php echo csrf_field(); ?>
 
                     <!-- Username -->
                     <div class="form-group <?php echo isset($errors['username']) ? 'has-error' : ''; ?>">
